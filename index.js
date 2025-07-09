@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/api/pendidikan', (req, res) => res.json(pendidikan));
-app.get('/api/skill', (req, res) => res.json(skills));
+app.get('/api/skills', (req, res) => res.json(skills));
 app.get('/api/proyek', (req, res) => res.json(proyek));
 app.get('/api/pengalaman', (req, res) => res.json(pengalaman));
 
