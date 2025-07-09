@@ -1,4 +1,21 @@
 // backend/data.js
+const pengalaman = [
+    {
+      judul: 'Frontend Developer di PT. Maju Mundur',
+      tanggal: 'Jan 2022 - Sekarang',
+      deskripsi: 'Mengembangkan dan memelihara aplikasi web menggunakan Vue.js dan teknologi frontend lainnya.'
+    },
+    {
+      judul: 'UI/UX Designer di Kreatif Studio',
+      tanggal: 'Jul 2020 - Des 2021',
+      deskripsi: 'Merancang tampilan antarmuka pengguna dan pengalaman pengguna untuk berbagai aplikasi mobile dan web.'
+    },
+    {
+      judul: 'Intern Web Developer di Startup XYZ',
+      tanggal: 'Jan 2020 - Jun 2020',
+      deskripsi: 'Membantu tim dalam membangun fitur-fitur baru dan memperbaiki bug pada website perusahaan.'
+    }
+  ];
 
 const pendidikan = [
     { id: 1, period: '2023 - Present', institution: 'Universitas Amikom Yogyakarta', major: 'S1 - Informatika' },
@@ -42,5 +59,5 @@ const pendidikan = [
 
   
   
-  module.exports = { pendidikan, skills, proyek };
+  module.exports = { pengalaman, pendidikan, skills, proyek };
   
