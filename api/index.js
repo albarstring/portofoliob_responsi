@@ -1,9 +1,8 @@
 // backend/index.js
 require('dotenv').config();
+const serverless = require('serverless-http');
 const express = require('express');
 const cors = require('cors');
-const { pendidikan, skills, proyek, pengalaman } = require('./data');
-
 const app = express();
 const PORT = 3000;
 const { Pool } = require('pg');
@@ -77,19 +76,19 @@ app.delete('/api/pendidikan/:id', async (req, res) => {
 });
 
 //skill
-app.get('/api/skill', async (req, res) => {
+app.get('/api/skills', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM skill ORDER BY id ASC');
+    const result = await pool.query('SELECT * FROM skills ORDER BY id ASC');
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-app.post('/api/skill', async (req, res) => {
+app.post('/api/skills', async (req, res) => {
   const { name, level } = req.body;
   try {
     const result = await pool.query(
-      'INSERT INTO skill (name, level) VALUES ($1, $2) RETURNING *',
+      'INSERT INTO skills (name, level) VALUES ($1, $2) RETURNING *',
       [name, level]
     );
     res.status(201).json(result.rows[0]);
@@ -97,13 +96,13 @@ app.post('/api/skill', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-app.put('/api/skill/:id', async (req, res) => {
+app.put('/api/skills/:id', async (req, res) => {
   const { id } = req.params;
   const { name, level } = req.body;
 
   try {
     const result = await pool.query(
-      'UPDATE skill SET name = $1, level = $2 WHERE id = $3 RETURNING *',
+      'UPDATE skills SET name = $1, level = $2 WHERE id = $3 RETURNING *',
       [name, level, id]
     );
 
@@ -116,11 +115,11 @@ app.put('/api/skill/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-app.delete('/api/skill/:id', async (req, res) => {
+app.delete('/api/skills/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await pool.query('DELETE FROM skill WHERE id = $1 RETURNING *', [id]);
+    const result = await pool.query('DELETE FROM skills WHERE id = $1 RETURNING *', [id]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Data tidak ditemukan' });
@@ -142,25 +141,29 @@ app.get('/api/proyek', async (req, res) => {
   }
 });
 app.post('/api/proyek', async (req, res) => {
-  const { name, description } = req.body;
+  const { title, image, description, tech, link } = req.body;
+
+  // Tambahkan ini:
+  console.log('Data diterima:', req.body);
+
   try {
     const result = await pool.query(
-      'INSERT INTO proyek (name, description) VALUES ($1, $2) RETURNING *',
-      [name, description]
+      'INSERT INTO proyek (title, image, description, tech, link) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [title, image, description, JSON.stringify(tech), link]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
+    console.error('ERROR:', err); // Tambahkan log error
     res.status(500).json({ error: err.message });
   }
 });
 app.put('/api/proyek/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, description } = req.body;
-
+  const { title, image, description, tech, link } = req.body;
   try {
     const result = await pool.query(
-      'UPDATE proyek SET name = $1, description = $2 WHERE id = $3 RETURNING *',
-      [name, description, id]
+      'UPDATE proyek SET title = $1, image = $2, description = $3, tech = $4, link = $5 WHERE id = $6 RETURNING *',
+      [title, image, description, tech, link, id]
     );
 
     if (result.rows.length === 0) {
@@ -199,11 +202,11 @@ app.get('/api/pengalaman', async (req, res) => {
 });
 
 app.post('/api/pengalaman', async (req, res) => {
-  const { position, company, year } = req.body;
+  const { judul, tanggal, deskripsi } = req.body;
   try {
     const result = await pool.query(
-      'INSERT INTO pengalaman (position, company, year) VALUES ($1, $2, $3) RETURNING *',
-      [position, company, year]
+      'INSERT INTO pengalaman (judul, tanggal, deskripsi) VALUES ($1, $2, $3) RETURNING *',
+      [judul, tanggal, deskripsi]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -213,12 +216,12 @@ app.post('/api/pengalaman', async (req, res) => {
 
 app.put('/api/pengalaman/:id', async (req, res) => {
   const { id } = req.params;
-  const { position, company, year } = req.body;
+  const { judul, tanggal, deskripsi } = req.body;
 
   try {
     const result = await pool.query(
-      'UPDATE pengalaman SET position = $1, company = $2, year = $3 WHERE id = $4 RETURNING *',
-      [position, company, year, id]
+      'UPDATE pengalaman SET judul = $1, tanggal = $2, deskripsi = $3 WHERE id = $4 RETURNING *',
+      [judul, tanggal, deskripsi, id]
     );
 
     if (result.rows.length === 0) {
@@ -256,7 +259,10 @@ app.get('/api/db-test', async (req, res) => {
   }
 });
 
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server berjalan di http://localhost:${PORT}`);
+  });
+}
 
-app.listen(PORT, () => {
-  console.log(`Server backend berjalan di http://localhost:${PORT}`);
-});
+module.exports = serverless(app);
