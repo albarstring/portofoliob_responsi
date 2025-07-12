@@ -1,6 +1,5 @@
 // backend/index.js
 require('dotenv').config();
-const serverless = require('serverless-http');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -265,4 +264,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = serverless(app);
+module.exports = app; 
